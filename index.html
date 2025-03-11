@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8">
+    <title>自訂容器與影片比例實時更新示範</title>
+    <style>
+      body {
+        margin: 20px;
+        font-family: sans-serif;
+      }
+      /* 輸入區塊 */
+      #controls {
+        margin-bottom: 20px;
+      }
+      label {
+        display: inline-block;
+        margin-right: 20px;
+      }
+      input {
+        width: 60px;
+        padding: 4px;
+        margin-left: 10px;
+      }
+      /* 固定寬度 600px 的容器 */
+      #container {
+        width: 600px;
+        background-color: #000;
+        position: relative;
+        margin-bottom: 20px;
+      }
+      /* 模擬影片區塊 */
+      #video {
+        position: absolute;
+        background-color: #ccc;
+      }
+      #info {
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="controls">
+      <label>
+        容器寬比：
+        <input type="number" id="containerWidthInput" value="3" min="0" step="any">
+      </label>
+      <label>
+        容器高比：
+        <input type="number" id="containerHeightInput" value="2" min="0" step="any">
+      </label>
+      <br><br>
+      <label>
+        影片寬比：
+        <input type="number" id="videoWidthInput" value="16" min="0" step="any">
+      </label>
+      <label>
+        影片高比：
+        <input type="number" id="videoHeightInput" value="9" min="0" step="any">
+      </label>
+    </div>
+
+    <div id="container">
+      <div id="video"></div>
+    </div>
+    <div id="info"></div>
+
+    <script>
+      function updateVideoSize() {
+        // 取得各項輸入數值
+        var containerWidthRatio = parseFloat(document.getElementById("containerWidthInput").value);
+        var containerHeightRatio = parseFloat(document.getElementById("containerHeightInput").value);
+        var videoWidthRatio = parseFloat(document.getElementById("videoWidthInput").value);
+        var videoHeightRatio = parseFloat(document.getElementById("videoHeightInput").value);
+        var info = document.getElementById("info");
+
+        // 檢查輸入是否有效
+        if (isNaN(containerWidthRatio) || isNaN(containerHeightRatio) || containerHeightRatio === 0 ||
+            isNaN(videoWidthRatio) || isNaN(videoHeightRatio) || videoHeightRatio === 0) {
+          info.innerHTML = "請輸入正確的數值，且高比不能為 0。";
+          return;
+        }
+
+        // 計算比例
+        var containerRatio = containerWidthRatio / containerHeightRatio;
+        var videoRatio = videoWidthRatio / videoHeightRatio;
+
+        // 固定容器寬度 600px，依據容器比例計算高度
+        var containerElement = document.getElementById("container");
+        var containerWidth = 600;
+        var containerHeight = containerWidth / containerRatio;
+        containerElement.style.height = containerHeight + "px";
+
+        var videoElement = document.getElementById("video");
+        var videoWidth, videoHeight;
+        var blackBarVertical = 0, blackBarHorizontal = 0;
+
+        // 比較容器與影片比例，計算影片尺寸及黑邊
+        if ((containerWidth / containerHeight) < videoRatio) {
+          // 容器較窄，影片以寬度為基準
+          videoWidth = containerWidth;
+          videoHeight = containerWidth / videoRatio;
+          blackBarVertical = (containerHeight - videoHeight) / 2;
+          videoElement.style.width = videoWidth + "px";
+          videoElement.style.height = videoHeight + "px";
+          videoElement.style.top = blackBarVertical + "px";
+          videoElement.style.left = "0px";
+        } else {
+          // 容器較寬，影片以高度為基準
+          videoHeight = containerHeight;
+          videoWidth = containerHeight * videoRatio;
+          blackBarHorizontal = (containerWidth - videoWidth) / 2;
+          videoElement.style.width = videoWidth + "px";
+          videoElement.style.height = videoHeight + "px";
+          videoElement.style.top = "0px";
+          videoElement.style.left = blackBarHorizontal + "px";
+        }
+
+        // 更新黑邊資訊
+        if (blackBarVertical > 0) {
+          info.innerHTML = "上下黑邊高度：每邊 " + blackBarVertical.toFixed(2) + " 像素";
+        } else if (blackBarHorizontal > 0) {
+          info.innerHTML = "左右黑邊寬度：每邊 " + blackBarHorizontal.toFixed(2) + " 像素";
+        } else {
+          info.innerHTML = "無黑邊";
+        }
+      }
+
+      // 針對所有輸入框添加「input」事件監聽，達到即時更新效果
+      var inputs = document.querySelectorAll("#controls input");
+      inputs.forEach(function(input) {
+        input.addEventListener("input", updateVideoSize);
+      });
+
+      // 初始更新
+      window.addEventListener("load", updateVideoSize);
+      window.addEventListener("resize", updateVideoSize);
+    </script>
+  </body>
+</html>
