@@ -3,66 +3,44 @@
   <head>
     <meta charset="UTF-8">
     <title>自訂容器與影片比例實時更新示範</title>
-    <style>
-      body {
-        margin: 20px;
-        font-family: sans-serif;
-      }
-      /* 輸入區塊 */
-      #controls {
-        margin-bottom: 20px;
-      }
-      label {
-        display: inline-block;
-        margin-right: 20px;
-      }
-      input {
-        width: 60px;
-        padding: 4px;
-        margin-left: 10px;
-      }
-      /* 固定寬度 600px 的容器 */
-      #container {
-        width: 600px;
-        background-color: #000;
-        position: relative;
-        margin-bottom: 20px;
-      }
-      /* 模擬影片區塊 */
-      #video {
-        position: absolute;
-        background-color: #ccc;
-      }
-      #info {
-        font-size: 16px;
-      }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <div id="controls">
-      <label>
-        容器寬比：
-        <input type="number" id="containerWidthInput" value="3" min="0" step="any">
-      </label>
-      <label>
-        容器高比：
-        <input type="number" id="containerHeightInput" value="2" min="0" step="any">
-      </label>
-      <br><br>
-      <label>
-        影片寬比：
-        <input type="number" id="videoWidthInput" value="16" min="0" step="any">
-      </label>
-      <label>
-        影片高比：
-        <input type="number" id="videoHeightInput" value="9" min="0" step="any">
-      </label>
+  <body class="m-5 font-sans">
+    <div id="controls" class="mb-5">
+      <div class="flex flex-wrap gap-4">
+        <div>
+          <label class="inline-block">
+            容器寬比：
+            <input type="number" id="containerWidthInput" value="3" min="0" step="any" class="border rounded px-2 py-1 ml-2 w-20">
+          </label>
+        </div>
+        <div>
+          <label class="inline-block">
+            容器高比：
+            <input type="number" id="containerHeightInput" value="2" min="0" step="any" class="border rounded px-2 py-1 ml-2 w-20">
+          </label>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-4 mt-4">
+        <div>
+          <label class="inline-block">
+            影片寬比：
+            <input type="number" id="videoWidthInput" value="16" min="0" step="any" class="border rounded px-2 py-1 ml-2 w-20">
+          </label>
+        </div>
+        <div>
+          <label class="inline-block">
+            影片高比：
+            <input type="number" id="videoHeightInput" value="9" min="0" step="any" class="border rounded px-2 py-1 ml-2 w-20">
+          </label>
+        </div>
+      </div>
     </div>
 
-    <div id="container">
-      <div id="video"></div>
+    <div id="container" class="w-[600px] bg-black relative mb-5">
+      <div id="video" class="absolute bg-gray-300"></div>
     </div>
-    <div id="info"></div>
+    <div id="info" class="text-lg"></div>
 
     <script>
       function updateVideoSize() {
@@ -76,7 +54,7 @@
         // 檢查輸入是否有效
         if (isNaN(containerWidthRatio) || isNaN(containerHeightRatio) || containerHeightRatio === 0 ||
             isNaN(videoWidthRatio) || isNaN(videoHeightRatio) || videoHeightRatio === 0) {
-          info.innerHTML = "請輸入正確的數值，且高比不能為 0。";
+          info.innerHTML = "請輸入正確的數值，且高比不能為　0。";
           return;
         }
 
@@ -84,7 +62,7 @@
         var containerRatio = containerWidthRatio / containerHeightRatio;
         var videoRatio = videoWidthRatio / videoHeightRatio;
 
-        // 固定容器寬度 600px，依據容器比例計算高度
+        // 固定容器寬度　600  px，依據容器比例計算高度
         var containerElement = document.getElementById("container");
         var containerWidth = 600;
         var containerHeight = containerWidth / containerRatio;
@@ -125,13 +103,12 @@
         }
       }
 
-      // 針對所有輸入框添加「input」事件監聽，達到即時更新效果
+      // 為所有輸入框添加「input」事件監聽，達成即時更新效果
       var inputs = document.querySelectorAll("#controls input");
       inputs.forEach(function(input) {
         input.addEventListener("input", updateVideoSize);
       });
 
-      // 初始更新
       window.addEventListener("load", updateVideoSize);
       window.addEventListener("resize", updateVideoSize);
     </script>
